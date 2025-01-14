@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In</title>
-
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        * {  
+        * {
             padding: 0;
             margin: 0;
             box-sizing: border-box;
@@ -94,31 +93,25 @@
     </style>
 </head>
 <body>
-
-    <!-- Navbar -->
     <div class="logo-container">
         <img src="iiuc_logo.jpg" alt="IIUC Logo" class="logo-img">
     </div>
 
-    <!-- Sign-In Form -->
-     <h4>
-        <?php
-        error_reporting(0); //to avoid receiving warning message
-        session_start();
-        session_destroy();
-        echo $_SESSION['sign_in_message'];
-        ?>
-     </h4>
-
     <div class="form-container">
         <h2>Sign In</h2>
+        <?php
+        session_start();
+        if (isset($_SESSION['sign_in_message'])) {
+            echo "<p style='color: red;'>{$_SESSION['sign_in_message']}</p>";
+            unset($_SESSION['sign_in_message']);
+        }
+        ?>
         <form action="sign_in_check2.php" method="POST">
-            <input type="email" name="email" placeholder="Enter Email" >
-            <input type="password" name="password" placeholder="Enter Password" >
+            <input type="text" name="username" placeholder="Enter your Username" required>
+            <input type="password" name="password" placeholder="Enter Password" required>
             <button type="submit">Sign In</button>
         </form>
         <a href="sign_up.php">Not a member yet? Sign Up</a>
     </div>
-
 </body>
 </html>

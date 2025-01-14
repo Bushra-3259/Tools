@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-if(!isset($_SESSION['email']))
-{
+if (!isset($_SESSION['username']) || $_SESSION['usertype'] !== "student") {
     header("location:sign_in.php");
+    exit();
 }
 ?>
 
@@ -15,7 +15,7 @@ if(!isset($_SESSION['email']))
     <title>Student Dashboard</title>
 </head>
 <body>
-    <h1>Student Home</h1>
+    <h1>Welcome to Student Dashboard, <?php echo $_SESSION['username']; ?>!</h1>
     <a href="sign_out.php">Sign Out</a>
 </body>
 </html>

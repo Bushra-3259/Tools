@@ -1,49 +1,42 @@
 <?php
-
-error_reporting(0);
 session_start();
+error_reporting(E_ALL);
 
 // Database connection
-$host = "localhost";
+$host = "localhost:3306";
 $user = "root";
 $password = "";
-$db = "student_info_sys"; // Intentionally incorrect database name for testing
+$db = "student_info_sys";
 
-$data = mysqli_connect($host, $user, $password, $db);
+$data = new mysqli($host, $user, $password, $db);
 
-if (!$data) {
-    // Show a warning message if the connection fails
-    die("connection error");
+if ($data->connect_error) {
+    die("Connection failed: " . $data->connect_error);
 }
 
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+    $name = $_POST['username'];
+    $pass = $_POST['password'];
 
-    $sql="select * from user where email ='".$email."' AND password = '".$password."' "
+    // Use a prepared statement to prevent SQL injection
+    $stmt = $data->prepare("SELECT * FROM user WHERE username = ? AND password = ?");
+    $stmt->bind_param("ss", $name, $pass);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    $result= mysqli_query($data, $sql);
+    if ($row = $result->fetch_assoc()) {
+        $_SESSION['username'] = $name;
+        $_SESSION['usertype'] = $row['usertype'];
 
-    $row= mysqli_fetch_array($result);
-
-    if($row["usertype"]=="student")
-    {
-        $_SESSION['email']=$email;
-        header("location:student_home.php");
+        if ($row["usertype"] == "student") {
+            header("location:student_home.php");
+        } elseif ($row["usertype"] == "admin") {
+            header("location:admin_home.php");
+        }
+    } else {
+        $_SESSION['sign_in_message'] = "Username or password do not match.";
+        header("location:sign_in.php");
     }
-    
-    elseif($row["usertype"]=="admin")
-    {
-        $_SESSION['email']=$email;
-        header("location:admin_home.php");
-    }
-    else //if email & pw none matches
-    {
-        $message= "email or pw do not match";
-
-        $_SESSION['sign_in_message']=$message;
-
-        header("location: sign_in.php");
-    }
+}
 ?>
